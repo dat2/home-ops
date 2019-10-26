@@ -2,6 +2,8 @@ apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
   name: hledger-update
+  labels:
+    name: hledger-update
 spec:
   schedule: "*/1 * * * *"
   jobTemplate:
@@ -14,10 +16,11 @@ spec:
               secretName: ssh-key
           containers:
           - name: app
-            image: gcr.io/melodic-nature-256520/hledger-update:latest
+            image: hledger-update:latest
+            imagePullPolicy: Never
             volumeMounts:
             - name: ssh-key-volume
               readOnly: true
-              mountPath: "/home/app/.ssh"
+              mountPath: "/home/app/ssh-keys"
           restartPolicy: OnFailure
 

@@ -1,6 +1,12 @@
 #!/bin/bash
 
-# scan github keys so that we can clone
+ls ~/ssh-keys
+
+# add the private key to the ssh agent
+eval $(ssh-agent -s)
+ssh-add ~/ssh-keys/id_rsa
+
+# scan github keys
 ssh-keyscan github.com > ~/.ssh/known_hosts
 
 # clone repo
