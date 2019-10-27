@@ -1,12 +1,16 @@
+# we need a cron job + git config
+
+---
 apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
   name: hledger-update
-  labels:
-    name: hledger-update
 spec:
   schedule: "*/1 * * * *"
   jobTemplate:
+    metadata:
+      labels:
+        name: hledger-update
     spec:
       template:
         spec:
@@ -14,6 +18,9 @@ spec:
           - name: ssh-key-volume
             secret:
               secretName: ssh-key
+          - name: config
+            configMap:
+              name: configs
           containers:
           - name: app
             image: hledger-update:latest
@@ -22,5 +29,15 @@ spec:
             - name: ssh-key-volume
               readOnly: true
               mountPath: "/home/app/ssh-keys"
+            - name: config
+              mountPath: /conf/
           restartPolicy: OnFailure
 
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: configs
+data:
+  .gitconfig: "[user]\n\tname = Nick Dujay\n\temail = nickdujay@gmail.com\n[push]\n\tdefault
+    = simple\n"
