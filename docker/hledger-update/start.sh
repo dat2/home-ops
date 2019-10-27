@@ -23,4 +23,6 @@ cp /conf/.gitconfig ~/.gitconfig
 # commit and push
 git add .
 git commit -m "update: $YESTERDAY"
+
+# don't push until we're safe
 # git push origin master

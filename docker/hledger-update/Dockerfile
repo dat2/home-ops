@@ -1,5 +1,6 @@
 FROM golang:alpine AS build
 
+# we need git so that we can go get
 RUN apk --update --no-cache add git
 
 RUN go get github.com/dat2/hledger-exporter
@@ -7,6 +8,7 @@ RUN go get github.com/dat2/hledger-exporter
 # main image
 FROM alpine
 
+# use the binary that we just built above
 COPY --from=build /go/bin/hledger-exporter /bin/hledger-exporter
 
 # install dependencies
@@ -22,6 +24,7 @@ RUN apk --update add --no-cache \
 RUN addgroup -S app && adduser -S app -G app
 USER app
 
+# run in the home directory
 WORKDIR /home/app
 
 # setup SSH credentials so we can git clone
