@@ -7,7 +7,7 @@ ssh-add ~/ssh-keys/id_rsa
 # scan github keys
 ssh-keyscan github.com > ~/.ssh/known_hosts
 
-# clone repo
+# clone repo and cd into it to work in it
 git clone git@github.com:dat2/hledger-transactions.git
 cd hledger-transactions
 
@@ -16,8 +16,6 @@ cd hledger-transactions
 YESTERDAY=$(date -d yesterday '+%Y/%m/%d')
 echo $YESTERDAY
 hledger-exporter export -s $YESTERDAY >> .hledger.journal
-
-git diff
 
 # copy git config so we can commit
 cp /conf/.gitconfig ~/.gitconfig

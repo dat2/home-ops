@@ -8,20 +8,24 @@ metadata:
 spec:
   schedule: "*/1 * * * *"
   jobTemplate:
-    metadata:
-      labels:
-        name: hledger-update
     spec:
       template:
+        metadata:
+          labels:
+            name: hledger-update
         spec:
           volumes:
+          # we need SSH key for git cloning
           - name: ssh-key-volume
             secret:
               secretName: ssh-key
+          # any other config we need
           - name: config
             configMap:
               name: configs
           containers:
+          # the main app container needs ssh keys so it can clone
+          # we also need .gitconfig so we can commit
           - name: app
             image: hledger-update:latest
             imagePullPolicy: Never
