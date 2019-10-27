@@ -1,0 +1,48 @@
+# hledger web just needs the following resources:
+# https://kubernetes.io/docs/concepts/storage/volumes/#gitrepo
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hledger-web-deployment
+  labels:
+    app: hledger-web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hledger-web
+  template:
+    metadata:
+      labels:
+        app: hledger-web
+    spec:
+      volumes:
+      # we need SSH key for git cloning
+      - name: ssh-key-volume
+        secret:
+          secretName: ssh-key
+      - name: repo
+        emptyDir: {}
+      initContainers:
+      - name: clone-repo
+        image: hledger-init
+        imagePullPolicy: Never
+        volumeMounts:
+        - name: ssh-key-volume
+          mountPath: "/home/app/ssh-keys"
+        - name: repo
+          mountPath: "/data"
+        env:
+        - name: REPO_LOCATION
+          value: "/data"
+      containers:
+      - name: app
+        image: dastapov/hledger
+        volumeMounts:
+        - name: repo
+          mountPath: "/data"
+        env:
+        - name: HLEDGER_JOURNAL_FILE
+          value: "/data/.hledger.journal"
