@@ -14,3 +14,4 @@ How to run:
 - Create the secret in k8s: `kubectl create secret generic ssh-key --from-file=$HOME/.ssh-k8s/id_rsa --from-file=$HOME/.ssh-k8s/id_rsa.pub`
 - Build the docker image: `docker build docker/hledger-update --tag hledger-update`.
 - Create the cron job: `kubectl apply -f k8s`
+- Create the plaid secret: `kubectl create secret generic plaid-secrets --from-literal=client_id=<PLAID_CLIENT_ID> --from-literal=secret=<PLAID_SECRET>--from-literal=public_key=<PLAID_PUBLIC_KEY> --from-literal=access_token=<PLAID ACCESS TOKEN>`

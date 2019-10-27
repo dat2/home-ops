@@ -13,9 +13,8 @@ cd hledger-transactions
 
 # update the script, print yesterdays transactions, since
 # we'll be running at midnight every day
-YESTERDAY=$(date -d yesterday '+%Y/%m/%d')
-echo $YESTERDAY
-hledger-exporter export -s $YESTERDAY >> .hledger.journal
+YESTERDAY=$(date -d 'yesterday' '+%Y/%m/%d')
+hledger-exporter $YESTERDAY >> .hledger.journal
 
 # copy git config so we can commit
 cp /conf/.gitconfig ~/.gitconfig
