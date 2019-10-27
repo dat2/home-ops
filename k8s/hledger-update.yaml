@@ -1,4 +1,7 @@
-# we need a cron job + git config
+# hledger update just needs the following resources:
+# cronjob - run the application on a schedule
+# configmap - we need git config so we can git commit
+# secret - we need ssh keys so we can clone
 
 ---
 apiVersion: batch/v1beta1
