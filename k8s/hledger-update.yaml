@@ -2,67 +2,58 @@
 # cronjob - run the application on a schedule
 # configmap - we need git config so we can git commit
 # secret - we need ssh keys so we can clone
-# in order to run this manually, use the following command:
-# kubectl create job --from=cronjob.batch/hledger-update hledger-update-manual-000
-# https://www.craftypenguins.net/how-to-trigger-a-kubernetes-cronjob-manually/
 
 ---
-apiVersion: batch/v1beta1
-kind: CronJob
+apiVersion: batch/v1
+kind: Job
 metadata:
   name: hledger-update
 spec:
-  schedule: "0 0 * * *"
-  jobTemplate:
+  template:
     spec:
-      template:
-        metadata:
-          labels:
-            name: hledger-update
-        spec:
-          volumes:
-          # we need SSH key for git cloning
+      restartPolicy: Never
+      volumes:
+      # we need SSH key for git cloning
+      - name: ssh-key-volume
+        secret:
+          secretName: ssh-key
+      # any other config we need
+      - name: config
+        configMap:
+          name: configs
+      containers:
+        # the main app container needs ssh keys so it can clone
+        # we also need .gitconfig so we can commit
+        - name: app
+          image: hledger-update:latest
+          imagePullPolicy: Never
+          volumeMounts:
           - name: ssh-key-volume
-            secret:
-              secretName: ssh-key
-          # any other config we need
+            readOnly: true
+            mountPath: "/home/app/ssh-keys"
           - name: config
-            configMap:
-              name: configs
-          containers:
-          # the main app container needs ssh keys so it can clone
-          # we also need .gitconfig so we can commit
-          - name: app
-            image: hledger-update:latest
-            imagePullPolicy: Never
-            volumeMounts:
-            - name: ssh-key-volume
-              readOnly: true
-              mountPath: "/home/app/ssh-keys"
-            - name: config
-              mountPath: "/conf/"
-            env:
-            - name: PLAID_CLIENT_ID
-              valueFrom:
-                secretKeyRef:
-                  name: plaid-secrets
-                  key: client_id
-            - name: PLAID_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: plaid-secrets
-                  key: secret
-            - name: PLAID_PUBLIC_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: plaid-secrets
-                  key: public_key
-            - name: PLAID_ACCESS_TOKEN
-              valueFrom:
-                secretKeyRef:
-                  name: plaid-secrets
-                  key: access_token
-          restartPolicy: Never
+            mountPath: "/conf/"
+          env:
+          - name: PLAID_CLIENT_ID
+            valueFrom:
+              secretKeyRef:
+                name: plaid-secrets
+                key: client_id
+          - name: PLAID_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: plaid-secrets
+                key: secret
+          - name: PLAID_PUBLIC_KEY
+            valueFrom:
+              secretKeyRef:
+                name: plaid-secrets
+                key: public_key
+          - name: PLAID_ACCESS_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: plaid-secrets
+                key: access_token
 
 ---
 apiVersion: v1
