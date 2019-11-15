@@ -5,7 +5,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: hledger-web-deployment
+  name: hledger-web
   labels:
     app: hledger-web
 spec:
@@ -46,3 +46,21 @@ spec:
         env:
         - name: HLEDGER_JOURNAL_FILE
           value: "/data/.hledger.journal"
+
+# a service will map a single IP address to all pods created by the deployment
+# the kube proxy service running on this node will proxy all requests to this
+# service to the pods via iptables
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hledger-web
+spec:
+  externalTrafficPolicy: Local
+  type: LoadBalancer
+  selector:
+    app: hledger-web
+  ports:
+    - name: http
+      port: 5000
+      targetPort: 5000
