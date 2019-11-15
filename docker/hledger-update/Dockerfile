@@ -14,11 +14,15 @@ COPY --from=build /go/bin/hledger-exporter /bin/hledger-exporter
 
 # install dependencies
 # git / openssh is for updating a git repo
-# coreutils is for date -d 'yesterday'
+# coreutils is for the amazing 'date' command
+# ca-certificates is so we can get the most up to date certs for the plaid APIs
+# hledger is so we can run queries to help us decide when to start exporting from
+
 RUN apt-get update && apt-get install -y --no-install-recommends \
         git \
         openssh-client \
         coreutils \
+        ca-certificates \
         hledger \
     && rm -rf /var/lib/apt/lists/*
 

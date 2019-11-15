@@ -14,9 +14,17 @@ cd hledger-transactions
 # use the last date reported from the journal +1 day.
 export LEDGER_FILE=$PWD/.hledger.journal
 LAST_DATE_IN_JOURNAL=$(hledger activity | tail -n 1 | cut -d' ' -f1 | xargs date '+%Y/%m/%d' -d)
-EXPORT_START_DATE=$(date -d "$LAST_DATE_IN_JOURNAL + 1 day" '+%Y/%m/%d')
+TODAY=$(date '+%Y/%m/%d')
 
-echo "updating from $EXPORT_START_DATE to $(date '+%Y/%m/%d')"
+# if we ran it earlier today, exit out successfully
+if [ $(date -d $LAST_DATE_IN_JOURNAL +%s) -ge $(date -d $TODAY +%s) ];
+then
+    echo "The update happened already today, exiting successfully."
+    exit 0
+fi
+
+EXPORT_START_DATE=$(date -d "$LAST_DATE_IN_JOURNAL + 1 day" '+%Y/%m/%d')
+echo "updating from $EXPORT_START_DATE to $TODAY"
 hledger-exporter $EXPORT_START_DATE >> .hledger.journal
 
 # copy git config so we can commit
