@@ -32,6 +32,6 @@ cp /conf/.gitconfig ~/.gitconfig
 
 # commit and push
 git add .
-git commit -m "update from $LAST_DATE_IN_JOURNAL to $EXPORT_START_DATE"
+git commit -m "update from $LAST_DATE_IN_JOURNAL to $TODAY"
 
-# git push origin master
+git push origin master
