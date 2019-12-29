@@ -1,0 +1,4 @@
+#!/bin/sh
+
+docker build docker/hledger-update --tag hledger-update
+docker build docker/hledger-init --tag hledger-init
