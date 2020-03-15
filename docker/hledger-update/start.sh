@@ -25,7 +25,7 @@ fi
 
 EXPORT_START_DATE=$(date -d "$LAST_DATE_IN_JOURNAL + 1 day" '+%Y/%m/%d')
 echo "updating from $EXPORT_START_DATE to $TODAY"
-hledger-exporter $EXPORT_START_DATE >> .hledger.journal
+hledger-exporter export $EXPORT_START_DATE >> .hledger.journal
 
 # copy git config so we can commit
 cp /conf/.gitconfig ~/.gitconfig
