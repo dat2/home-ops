@@ -9,7 +9,7 @@ kind: CronJob
 metadata:
   name: hledger-update
 spec:
-  schedule: "00 13 * * FRI"
+  schedule: "00 14 * * FRI"
   jobTemplate:
     spec:
       template:
